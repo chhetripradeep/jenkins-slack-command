@@ -9,14 +9,14 @@
       "required": true
     },
     "SLACK_WEBHOOK_URL": {
-      "description": "Your incoming webhook URL"
+      "description": "Incoming webhook URL"
     },
     "JENKINS_URL": {
-      "description": "URL to your Heroku instnace",
+      "description": "Jenkins instnace URL",
       "required": true
     },
     "JENKINS_TOKEN": {
-      "description": "API token of your user in Jenkins",
+      "description": "API token of Jenkins",
       "required": true
     }
   }

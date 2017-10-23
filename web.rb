@@ -11,8 +11,8 @@ post '/' do
 
   # Verify all environment variables are set
   return [403, "No slack token setup"] unless slack_token = ENV['SLACK_TOKEN']
-  return [403, "No jenkins url setup"] unless jenkins_url= ENV['JENKINS_URL']
-  return [403, "No jenkins token setup"] unless jenkins_token= ENV['JENKINS_TOKEN']
+  return [403, "No jenkins url setup"] unless jenkins_url = ENV['JENKINS_URL']
+  return [403, "No jenkins token setup"] unless jenkins_token = ENV['JENKINS_TOKEN']
 
   # Verify slack token matches environment variable
   return [401, "No authorized for this command"] unless slack_token == params['token']
@@ -22,6 +22,9 @@ post '/' do
 
   # Split command text - job
   job = text_parts[0]
+  unless job.start_with?("build")
+    job = "build-" + job
+  end
 
   # Split command text - parameters
   parameters = []
@@ -29,7 +32,19 @@ post '/' do
     all_params = text_parts[1..-1]
     all_params.each do |p|
       p_thing = p.split('=')
-      parameters << { :name => p_thing[0], :value => p_thing[1] }
+      if p_thing.length > 1
+        if p_thing[1].start_with?("origin")
+          parameters << { :name => p_thing[0], :value => p_thing[1] }
+        else
+          parameters << { :name => p_thing[0], :value => "origin/" + p_thing[1] }
+        end
+      else
+        if p_thing[0].start_with?("origin")
+          parameters << { :name => "BRANCH_SELECTION", :value => p_thing[0] }
+        else
+          parameters << { :name => "BRANCH_SELECTION", :value => "origin/" + p_thing[0] }
+        end
+      end
     end
   end
 
